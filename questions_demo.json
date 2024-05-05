@@ -1,0 +1,73 @@
+[
+    {
+        "question_id": 18,
+        "variable_name" : "gender",
+        "question": "What is your gender?",
+        "choices": ["Man", "Woman", "Other", "Prefer not to say"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 19,
+        "variable_name" : "education",
+        "question": "What is the last class you completed in school?",
+        "choices": ["Grade school (first 8 years)", "High school diploma or equivalent", "Technical or vocational school after high school", "Some college, no degree", "Four-year college degree", "Graduate or professional school"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 20,
+        "variable_name" : "age_group",
+        "question": "What is your age?",
+        "choices": ["Under 18", "18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old",  "55-64 years old",  "65+ years old"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 21,
+        "variable_name" : "religion",
+        "question": "How would you describe your religious beliefs?",
+        "choices": ["Deeply religiouse", "Moderately religious", "Not too religious", "Not at all religious", "Not sure how I feel about religion"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 22,
+        "variable_name" : "ideology",
+        "question": "Generally speaking, how would you describe your political views?",
+        "choices": ["Very conservative", "Conservative", "Moderate", "Liberal", "Very liberal"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 23,
+        "variable_name" : "occupation",
+        "question": "Please indicate your occupation:",
+        "choices": ["Management, professional, supervisory", "Service (teaching, health care, social work, etc.)", "Sales and office", "Farming, fishing, and forestry", "Construction, extraction, and maintenance", "Production, transportation, and material moving", "Government", "Retired", "Full-time student", "Unemployed"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 24,
+        "variable_name" : "household_income",
+        "question": "Compared to similar people in your living situation, where would you place your household income?",
+        "choices": ["Bottom 20% of households", "Next 20% of households", "Middle 20% of households", "Almost top 20% of households", "Top 20% of households"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 25,
+        "variable_name" : "relationship",
+        "question": "How would you describe your current relationship?",
+        "choices": ["I’m single", "I’m recently married (or in an intimate relationship)", "I’m in a long-term marriage (or intimate relationship)", "I’m recently divorced (or have ended an intimate relationship)", "I’m a widow or widower"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 26,
+        "variable_name" : "mass_media",
+        "question": "During the average week, how many days do you spend considerable time reading or watching the news on TV, in printed form, or online?",
+        "choices": ["Every day", "Five or six days", "Three or four days", "One or two days", "Almost never"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 27,
+        "variable_name" : "social_media",
+        "question": "When it comes to social media (Twitter, Facebook, Instagram), how often do you post something?",
+        "choices": ["Almost never", "Once a day", "Two or three times a day", "Five or six times a day", "Ten or more times a day"],
+        "correct_answers": ["XXX"]
+    }
+    
+]

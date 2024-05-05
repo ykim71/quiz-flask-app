@@ -3,6 +3,7 @@ CREATE TABLE `quiz_log` (
   `session_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `question_number` int DEFAULT NULL,
   `question_id` int DEFAULT NULL,
+  `variable_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `question` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `user_answers` text COLLATE utf8mb4_general_ci,
   `correct_answers` text COLLATE utf8mb4_general_ci,

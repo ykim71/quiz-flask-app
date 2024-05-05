@@ -1,0 +1,122 @@
+[
+    {
+        "question_id": 1,
+        "variable_name" : "A01Frank",
+        "question": "People should be frank and spontaneous in conversation.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 2,
+        "variable_name" : "A05Sleep",
+        "question": "It's good to follow the rule: 'Before blowing your top at someone, sleep on the problem.'",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 3,
+        "variable_name" : "A07Hide",
+        "question": "It’s best to hide your true feelings to avoid hurting others.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 4,
+        "variable_name" : "A13Tell ",
+        "question": "A person should tell it like it is.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 5,
+        "variable_name" : "A15Mistake",
+        "question": "You should tell a friend if you think they’re making a mistake.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 6,
+        "variable_name" : "A16First",
+        "question": "The first thing that comes to mind is the best thing to say.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 7,
+        "variable_name" : "A17Want",
+        "question": "When conversing with others, you should tell them what they want to hear.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 8,
+        "variable_name" : "A20Habit",
+        "question": "When someone has an irritating habit they should be told about it.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 9,
+        "variable_name" : "A21Adjust",
+        "question": "When talking to your friends, you should adjust your remarks to suit them.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 10,
+        "variable_name" : "A25Words",
+        "question": "Putting thoughts into words just the way you want them is difficult.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 11,
+        "variable_name" : "A26Breath",
+        "question": "A friend who has bad breath should be told about it.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 12,
+        "variable_name" : "A28Open",
+        "question": "If people would open-up with each other, the world would be better off.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 13,
+        "variable_name" : "A30Embarrass",
+        "question": "You should tell someone if you think they’re about to embarrass themselves.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 14,
+        "variable_name" : "A31Voice",
+        "question": "People should not be afraid to voice their opinion.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 15,
+        "variable_name" : "A33Advice",
+        "question": "You should tell someone if you think they’re giving you bad advice.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 16,
+        "variable_name" : "A34Friendship",
+        "question": "Saying what you think is a sign of friendship.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    },
+    {
+        "question_id": 17,
+        "variable_name" : "A38Bush",
+        "question": "It’s better to speak your gut feelings than to beat around the bush.",
+        "choices": ["Almost never true", "Rarely true", "Sometimes true", "Often true", "Almost always true"],
+        "correct_answers": ["XXX"]
+    }
+
+]

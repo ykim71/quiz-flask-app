@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Demographic questions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <h1 class="mt-5" aria-label="Demographic questions">{{ quiz_title }}</h1>
+        <div class="result-summary">
+            <h2 aria-label="Number-questions">
+                PLEASE TELL US ABOUT YOURSELF 
+            </h2>
+        </div>
+        <h3 aria-label="Questions">Answers to the following questions will be completely anonymous.  They are intended to help us get a general feeling for those who complete the RHETSEN scale.  No web-based identifying information is being collected.  We deeply appreciate your help with our research.</h3>
+
+        <form method="POST" action="/next">
+            {% for question in questions %}
+            <ul class="list-group mt-3">
+                <li class="list-group-item question-item">
+                    <p class="question-text">{{ question['question'] }}</p>
+                    <div class="question" id="{{ question['question_id'] }}">
+                        <input type="hidden" name="first_modified_{{ question['question_id'] }}"
+                            id="first_modified_{{ question['question_id'] }}" value="{{ current_timestamp }}">
+                        <input type="hidden" name="last_modified_{{ question['question_id'] }}"
+                            id="last_modified_{{ question['question_id'] }}" value="{{ current_timestamp }}">
+                        <ul class="answer-list">
+                            {% for choice in question['choices'] %}
+                            <li class="list-group-item">
+                                <input type="radio" class="form-check-input" name="{{ question['question_id'] }}"
+                                    value="{{ choice }}" id="{{ question['question_id'] }}_{{ choice }}">
+                                <label class="answer-text" for="{{ question['question_id'] }}_{{ choice }}">{{ choice }}</label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            {% endfor %}
+            </ul>
+
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("input[type='radio']").change(function () {
+                // Toggle the selected-answer class when the radio changes
+                var questionDiv = $(this).closest('.question');
+                questionDiv.find('.selected-answer').removeClass('selected-answer');
+                $(this).closest('li').addClass('selected-answer');
+
+                // Update timestamps for modification
+                var questionId = questionDiv.attr('id');
+                var firstModifiedField = $("#first_modified_" + questionId);
+                var lastModifiedField = $("#last_modified_" + questionId);
+                var now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+                if (!firstModifiedField.val()) {
+                    firstModifiedField.val(now);
+                }
+                lastModifiedField.val(now);
+            });
+
+            $("#submit-button").click(function () {
+                $("#quiz-form").submit();
+            });
+        });
+    </script>
+
+</body>
+
+</html>
