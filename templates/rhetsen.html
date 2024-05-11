@@ -13,24 +13,21 @@
 
 <body>
     <div class="container-fluid">
-        <h1 class="mt-5" aria-label="Quiz Results">{{ quiz_title }}</h1>
+        <h1 class="mt-5" aria-label="Quiz Results">RHETSEN</h1>
         <div class="result-summary">
             <h2 aria-label="Number-questions">
-                This test has {{ num_questions }} {{ 'question' if num_questions == 1 else 'questions' }}
+                Please answer all questions.
             </h2>
         </div>
         <h3 aria-label="Questions">Questions:</h3>
 
-        <form method="POST" action="/next">
+        <form id="quiz-form" method="POST" action="/demo">
             {% for question in questions %}
             <ul class="list-group mt-3">
                 <li class="list-group-item question-item">
                     <p class="question-text">{{ question['question'] }}</p>
                     <div class="question" id="{{ question['question_id'] }}">
-                        <input type="hidden" name="first_modified_{{ question['question_id'] }}"
-                            id="first_modified_{{ question['question_id'] }}" value="{{ current_timestamp }}">
-                        <input type="hidden" name="last_modified_{{ question['question_id'] }}"
-                            id="last_modified_{{ question['question_id'] }}" value="{{ current_timestamp }}">
+
                         <ul class="answer-list">
                             {% for choice in question['choices'] %}
                             <li class="list-group-item">
@@ -44,39 +41,55 @@
                 </li>
             </ul>
             {% endfor %}
-            </ul>
-
             <div class="mt-4 text-center">
-                <button type="next" class="btn btn-primary"></a>Continue</button>
+                <button type="button" id="submit-button" class="btn btn-primary">Continue</button>
             </div>
         </form>
     </div>
 
     <script>
         $(document).ready(function () {
+            // Handle form submission
+            $("#submit-button").click(function (event) {
+                event.preventDefault(); // Prevent default form submission via the button
+                let allAnswered = true; // Flag to check if all questions have been answered
+        
+                $(".question").each(function() {
+                    // Check if any question does not have a selected radio button
+                    if ($(this).find("input[type='radio']:checked").length === 0) {
+                        allAnswered = false; // Set flag to false if a question is unanswered
+                        $(this).css('background-color', '#ffcccc'); // Optionally highlight the unanswered question
+                    } else {
+                        $(this).css('background-color', ''); // Reset background color if answered
+                    }
+                });
+        
+                if (allAnswered) {
+                    $(this).closest('form').submit(); // Submit form if all questions are answered
+                } else {
+                    alert("Please answer all questions before continuing."); // Alert if some questions are unanswered
+                }
+            });
+        
+            // Toggle the selected-answer class when the radio changes
             $("input[type='radio']").change(function () {
-                // Toggle the selected-answer class when the radio changes
                 var questionDiv = $(this).closest('.question');
                 questionDiv.find('.selected-answer').removeClass('selected-answer');
                 $(this).closest('li').addClass('selected-answer');
-
+        
                 // Update timestamps for modification
                 var questionId = questionDiv.attr('id');
-                var firstModifiedField = $("#first_modified_" + questionId);
-                var lastModifiedField = $("#last_modified_" + questionId);
-                var now = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
+                var now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        
                 if (!firstModifiedField.val()) {
                     firstModifiedField.val(now);
                 }
                 lastModifiedField.val(now);
             });
-
-            $("#submit-button").click(function () {
-                $("#quiz-form").next();
-            });
         });
     </script>
+        
 
 </body>
 

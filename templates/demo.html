@@ -13,7 +13,7 @@
 
 <body>
     <div class="container-fluid">
-        <h1 class="mt-5" aria-label="Demographic questions">{{ quiz_title }}</h1>
+        <h1 class="mt-5" aria-label="Demographic questions">RHETSEN</h1>
         <div class="result-summary">
             <h2 aria-label="Number-questions">
                 PLEASE TELL US ABOUT YOURSELF 
@@ -21,7 +21,7 @@
         </div>
         <h3 aria-label="Questions">Answers to the following questions will be completely anonymous.  They are intended to help us get a general feeling for those who complete the RHETSEN scale.  No web-based identifying information is being collected.  We deeply appreciate your help with our research.</h3>
 
-        <form method="POST" action="/next">
+        <form method="POST" action="/submit">
             {% for question in questions %}
             <ul class="list-group mt-3">
                 <li class="list-group-item question-item">

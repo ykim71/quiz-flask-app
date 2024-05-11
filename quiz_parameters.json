@@ -1,5 +1,6 @@
 {
-    "num_questions": 17,
-    "passing_level": 0.8,
-    "quiz_title": "RHETSEN "
+    "Sensitivity_level": [6.8, 13.2, 19.9, 25.7, 32.4],
+    "Assertiveness_level": [0, 4.2, 10.3, 16.2, 22.0],
+    "Reflector_level": [0, 1,3, 4.3, 7.3, 10.3],
+    "quiz_title": "RHETSEN"
 }

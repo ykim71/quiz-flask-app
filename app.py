@@ -31,33 +31,19 @@ with open('questions_demo.json', 'r') as file:
     demo_questions = json.load(file)
     
 
-# Function to select 2 random questions
-def select_random_questions(questions_list):
-    with open('quiz_parameters.json', 'r') as params_file:
-        params = json.load(params_file)
-        num_questions = params.get('num_questions', 17)  # Show them all; random order
-
-    return random.sample(questions_list, num_questions)
-
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/rhetsen')
 def rhetsen():
-    selected_questions = select_random_questions(questions)
-    session['current_questions'] = selected_questions
+    session['current_questions'] = questions
     session['session_id'] = generate_session_id()  # Generate a session ID
     session['page_load_time'] = datetime.now()  # Store the page load time
-
-    # Get the total number of questions
-    with open('quiz_parameters.json', 'r') as params_file:
-        params = json.load(params_file)
-        num_questions = params.get('num_questions', 17)  # Default to 2 questions if not specified
-        quiz_title =  params.get('quiz_title', 'Quiz')  # Blank if not specified
+    num_questions=17
 
     # Pass the num_questions variable to the template
-    return render_template('rhetsen.html', questions=selected_questions, num_questions=num_questions, quiz_title=quiz_title)
+    return render_template('rhetsen.html', questions=questions, num_questions=num_questions)
 
 # Function to generate a unique session ID
 def generate_session_id():
@@ -65,81 +51,146 @@ def generate_session_id():
     return str(uuid.uuid4())
 
 
-@app.route('/next', methods=['POST'])
-def next():
+@app.route('/demo', methods=['POST'])
+def demo():
     session['demo_questions'] = demo_questions
-    session['session_id'] = generate_session_id()  # Generate a session ID
-    session['page_load_time'] = datetime.now()  # Store the page load time
 
-    # Read passing level from quiz_parameters.json
-    with open('quiz_parameters.json', 'r') as params_file:
-        params = json.load(params_file)
-        passing_level = params.get('passing_level', 0.7)  # Default passing level to 0.7 if not specified
-        num_questions = params.get('num_questions', 17)  # Default to 2 questions if not specified
-    
-    score = 0
-    results = []
-    selected_questions = session.get('current_questions', [])
-    question_number = 1  # Initialize the question number
-
-    cursor = mysql.cursor()
-    cursor.execute(
-        "INSERT INTO session_info (session_id, page_load_time, submission_time, num_questions, passing_level) VALUES (%s, %s, %s, %s, %s)",
-        (session.get('session_id'), session.get('page_load_time'), datetime.now(), num_questions, passing_level)
-    )
-
-    for question in selected_questions:
-        user_answers = request.form.getlist(question['question'])
-        correct_answers = question['correct_answers']
-
-        is_correct = set(user_answers) == set(correct_answers) and len(user_answers) == len(correct_answers)
-
-        # Ensure that both timestamps are either valid datetimes or None
-        if request.form.get("first_modified_" + str(question['question_id'])) == '':
-            first_modified_time = None
-        else:
-            first_modified_time = request.form.get("first_modified_" + str(question['question_id']))
-
-        if request.form.get("last_modified_" + str(question['question_id'])) == '':
-            last_modified_time = None
-        else:
-            last_modified_time = request.form.get("last_modified_" + str(question['question_id']))
-
-        # Save the quiz log for each selected answer with timestamp
-        query = '''INSERT INTO quiz_log (session_id, question_number, question_id, variable_name, question, user_answers, correct_answers, is_correct, first_modified_time, last_modified_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-        cursor.execute(query, (session.get('session_id'), question_number, question['question_id'],  question['variable_name'], question['question'], '|'.join(user_answers), '|'.join(correct_answers), is_correct, first_modified_time, last_modified_time))
-
-        results.append({
-            'question_id': question['question_id'],
-            'question': question['question'],
-            'user_answers': user_answers,
-            'correct_answers': correct_answers,
-            'is_correct': is_correct,
-        })
-
-        if is_correct:
-            score += 1
-
-        question_number += 1  # Increment the question number
-
-    # Commit the changes to the database
-    mysql.commit()
-    cursor.close()
-
-    return render_template('demo.html', questions=demo_questions, num_questions=10, quiz_title='test_xx')
+    return render_template('demo.html', questions=demo_questions)
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # Read passing level from quiz_parameters.json
-    with open('quiz_parameters.json', 'r') as params_file:
-        params = json.load(params_file)
-        passing_level = params.get('passing_level', 0.7)  # Default passing level to 0.7 if not specified
-        num_questions = params.get('num_questions', 17)  # Default to 2 questions if not specified
-    
-    score = 0
+
+    Sensitivity_level = 0  
+    Assertiveness_level = 0  
+    Reflector_level = 0 
+
     results = []
     selected_questions = session.get('current_questions', [])
-    question_number = 1  # Initialize the question number
+    num_questions=17
+    passing_level=0
+    question_number = 1 
+
+    question_response_mapping = {
+    1: {  # A01Frank
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    },
+    2: {  # A05Sleep
+        "Almost never true": (0, 2, 0),
+        "Rarely true": (1, 1, 0),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 0, 1),
+        "Almost always true": (0, 0, 2),
+    },
+    3: {  # A07Hide
+        "Almost never true": (0, 2, 0),
+        "Rarely true": (1, 1, 0),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 0, 1),
+        "Almost always true": (0, 0, 2),
+    },
+    4: {  # A13Tell
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    },
+    5: {  # A15Mistake
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    },   
+    6: {  # A16First
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    },  
+    7: {  # A17Want
+        "Almost never true": (0, 2, 0),
+        "Rarely true": (1, 1, 0),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 0, 1),
+        "Almost always true": (0, 0, 2),
+    },    
+    8: {  # A20Habit
+        "Almost never true": (0, 2, 2),
+        "Rarely true": (1, 1, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 0, 0),
+        "Almost always true": (0, 0, 0),
+    },  
+    9: {  # A21Adjust
+        "Almost never true": (0, 2, 0),
+        "Rarely true": (1, 1, 0),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 0, 1),
+        "Almost always true": (0, 0, 2),
+    }, 
+    10: {  # A25Words
+        "Almost never true": (0, 0, 0),
+        "Rarely true": (1, 0, 0),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 1),
+        "Almost always true": (0, 2, 2),
+    }, 
+    11: {  # A26Breath
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    }, 
+    12: {  # A28Open
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    }, 
+    13: {  # A30Embarrass
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    }, 
+    14: {  # A31Voice
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    }, 
+    15: {  # A33Advice
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    }, 
+    16: {  # A34Friendship
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    }, 
+    17: {  # A38Bush
+        "Almost never true": (0, 0, 2),
+        "Rarely true": (1, 0, 1),
+        "Sometimes true": (2, 0, 0),
+        "Often true": (1, 1, 0),
+        "Almost always true": (0, 2, 0),
+    }
+}
 
     cursor = mysql.cursor()
     cursor.execute(
@@ -149,43 +200,33 @@ def submit():
 
     for question in selected_questions:
         user_answers = request.form.getlist(question['question'])
-        correct_answers = question['correct_answers']
-
-        is_correct = set(user_answers) == set(correct_answers) and len(user_answers) == len(correct_answers)
-
-        # Ensure that both timestamps are either valid datetimes or None
-        if request.form.get("first_modified_" + str(question['question_id'])) == '':
-            first_modified_time = None
-        else:
-            first_modified_time = request.form.get("first_modified_" + str(question['question_id']))
-
-        if request.form.get("last_modified_" + str(question['question_id'])) == '':
-            last_modified_time = None
-        else:
-            last_modified_time = request.form.get("last_modified_" + str(question['question_id']))
 
         # Save the quiz log for each selected answer with timestamp
-        query = '''INSERT INTO quiz_log (session_id, question_number, question_id, variable_name, question, user_answers, correct_answers, is_correct, first_modified_time, last_modified_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-        cursor.execute(query, (session.get('session_id'), question_number, question['question_id'],  question['variable_name'], question['question'], '|'.join(user_answers), '|'.join(correct_answers), is_correct, first_modified_time, last_modified_time))
+        query = '''INSERT INTO quiz_log (session_id, question_number, question_id, variable_name, question, user_answers) VALUES (%s, %s, %s, %s, %s, %s)'''
+        cursor.execute(query, (session.get('session_id'), question_number, question['question_id'], question['variable_name'], question['question'], '|'.join(user_answers)))
 
         results.append({
             'question_id': question['question_id'],
             'question': question['question'],
             'user_answers': user_answers,
-            'correct_answers': correct_answers,
-            'is_correct': is_correct,
+
         })
+        
 
-        if is_correct:
-            score += 1
-
-        question_number += 1  # Increment the question number
+        if user_answers:
+            sensitivity, assertiveness, reflector = question_response_mapping[question_number][user_answers]
+            Sensitivity_level += sensitivity
+            Assertiveness_level += assertiveness
+            Reflector_level += reflector
+        
+        question_number += 1
+            
 
     # Commit the changes to the database
     mysql.commit()
     cursor.close()
 
-    return render_template('result.html', score=score, total=len(selected_questions), results=results, passing_level=passing_level, selected_questions=selected_questions)
+    return render_template('result.html', Sensitivity_level=Sensitivity_level, Assertiveness_level=Assertiveness_level, Reflector_level=Reflector_level, results=results, selected_questions=selected_questions)
 
 if __name__ == '__main__':
     app.run(debug=True)
