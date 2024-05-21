@@ -4,79 +4,112 @@
     <title>RHETSEN Result</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .gauge-container {
+            display: flex;
+            justify-content: center; /* Centers the gauge in the flex container */
+            align-items: center;
+            height: 200px; /* Adjust height as necessary */
+        }
+        .result-summary {
+            text-align: center; /* Centers the text within the section */
+        }
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['gauge']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        // Sensitivity Gauge Configuration
+        var sensitivityOptions = {
+          width: 120, height: 120,
+          greenFrom: 0, greenTo: 13.2, greenColor: '#66c2a5', // Light green
+          yellowFrom: 13.2, yellowTo: 25.7, yellowColor: '#ffd92f', // Yellow
+          redFrom: 25.7, redTo: 32.4, redColor: '#d73027', // Red
+          max: 32.4,
+          minorTicks: 1
+        };
+
+        // Assertiveness Gauge Configuration
+        var assertivenessOptions = {
+          width: 120, height: 120,
+          greenFrom: 0, greenTo: 4.2, greenColor: '#66c2a5', // Light green
+          yellowFrom: 4.2, yellowTo: 16.2, yellowColor: '#fc8d62', // Orange-yellow
+          redFrom: 16.2, redTo: 22.0, redColor: '#8da0cb', // Red
+          max: 22.0,
+          minorTicks: 1
+        };
+
+        // Reflector Gauge Configuration
+        var reflectorOptions = {
+          width: 120, height: 120,
+          greenFrom: 0, greenTo: 1.3, greenColor: '#a6d854', // Light green
+          yellowFrom: 1.3, yellowTo: 7.3, yellowColor: '#ffd92f', // Yellow
+          redFrom: 7.3, redTo: 10.3, redColor: '#e78ac3', // Light red
+          max: 10.3,
+          minorTicks: 1
+        };
+
+        var dataSensitivity = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Sensitivity', {{ Sensitivity_level }}]
+        ]);
+        var chartSensitivity = new google.visualization.Gauge(document.getElementById('sensitivity_gauge'));
+        chartSensitivity.draw(dataSensitivity, sensitivityOptions);
+
+        var dataAssertiveness = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Assertiveness', {{ Assertiveness_level }}]
+        ]);
+        var chartAssertiveness = new google.visualization.Gauge(document.getElementById('assertiveness_gauge'));
+        chartAssertiveness.draw(dataAssertiveness, assertivenessOptions);
+
+        var dataReflector = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Reflector', {{ Reflector_level }}]
+        ]);
+        var chartReflector = new google.visualization.Gauge(document.getElementById('reflector_gauge'));
+        chartReflector.draw(dataReflector, reflectorOptions);
+      }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5" aria-label="RHETSEN Results">RHETSEN Result</h1>   
-        <div class="result-summary">
-            <h2 aria-label="Your Sensitivity Score">Your Sensitivity Score: {{ Sensitivity_level }}</h2>
-            {% if Sensitivity_level >= 32.4 %}
-                <h3 class="text-success" aria-label=" Level: Very High ">Level: Very High<i class="fas fa-times-circle"></i></h3>
-            {% elif Sensitivity_level >= 25.7 %}
-                <h3 class="text-success" aria-label=" Level: High ">Level: High<i class="fas fa-check-circle"></i></h3>
-            {% elif Sensitivity_level >= 19.9 %}
-                <h3 class="text-success" aria-label=" Level: Moderate ">Level: Moderate<i class="fas fa-check-circle"></i></h3>
-            {% elif Sensitivity_level >= 13.2 %}
-                <h3 class="text-success" aria-label=" Level: Low ">Level: Low<i class="fas fa-check-circle"></i></h3>
-            {% else %}
-                <h3 class="text-success" aria-label=" Level: Very Low ">Level: Very Low<i class="fas fa-check-circle"></i></h3>
-            {% endif %}
-            <h2 aria-label="Sensitivity information">Sensitives (1) balance their needs with others’ needs; (2) distinguish all thoughts from those that should be shared; (3) know that being flexible is the key to successful relationships, and (4) accommodate other people until doing so becomes distasteful or unproductive.</h2>
+        <h1 class="mt-5" aria-label="RHETSEN Results">RHETSEN Result</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="gauge-container">
+                    <div id="sensitivity_gauge"></div>
+                </div>
+                <div class="result-summary">
+                    <h2 aria-label="Your Sensitivity Score">Your Sensitivity Score: {{ Sensitivity_level }}</h2>
+                    <p>Sensitives (1) balance their needs with others’ needs; (2) distinguish all thoughts from those that should be shared; (3) know that being flexible is the key to successful relationships, and (4) accommodate other people until doing so becomes distasteful or unproductive.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="gauge-container">
+                    <div id="assertiveness_gauge"></div>
+                </div>
+                <div class="result-summary">
+                    <h2 aria-label="Your Assertiveness Score">Your Assertiveness Score: {{ Assertiveness_level }}</h2>
+                    <p>Assertives (1) speak their minds at all costs, (2) always honor their "real selves," (3) never pander to other people under any circumstance, and (4) strongly feel that “if you think it, you should say it.’</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="gauge-container">
+                    <div id="reflector_gauge"></div>
+                </div>
+                <div class="result-summary">
+                    <h2 aria-label="Your Reflector Score">Your Reflector Score: {{ Reflector_level }}</h2>
+                    <p>Reflectors (1) take their cues from other people, (2) analyze everything carefully and then do so once again, (3) constantly adapt to others’ moods, and (4) feel that being liked is the key to building a lasting relationship.</p>
+                </div>
+            </div>
         </div>
-        <div class="result-summary">
-            <h2 aria-label="Your Assertiveness Score">Your Assertiveness Score: {{ Assertiveness_level }}</h2>
-            {% if Assertiveness_level >= 22.0 %}
-                <h3 class="text-success" aria-label=" Level: Very High ">Level: Very High<i class="fas fa-times-circle"></i></h3>
-            {% elif Assertiveness_level >= 16.2 %}
-                <h3 class="text-success" aria-label=" Level: High ">Level: High<i class="fas fa-check-circle"></i></h3>
-            {% elif Assertiveness_level >= 10.3 %}
-                <h3 class="text-success" aria-label=" Level: Moderate ">Level: Moderate<i class="fas fa-check-circle"></i></h3>
-            {% elif Assertiveness_level >= 4.2 %}
-                <h3 class="text-success" aria-label=" Level: Low ">Level: Low<i class="fas fa-check-circle"></i></h3>
-            {% else %}
-                <h3 class="text-success" aria-label=" Level: Very Low ">Level: Very Low<i class="fas fa-check-circle"></i></h3>
-            {% endif %}
-            <h2 aria-label="Assertiveness information">Assertives (1) speak their minds at all costs, (2) always honor their "real selves," (3) never pander to other people under any circumstance, and (4) strongly feel that “if you think it, you should say it.’</h2>
-
-        </div>
-        <div class="result-summary">
-            <h2 aria-label="Your Reflector Score">Your Reflector Score: {{ Reflector_level }}</h2>
-            {% if Reflector_level >= 10.3 %}
-                <h3 class="text-success" aria-label=" Level:Very High ">Level:Very High<i class="fas fa-times-circle"></i></h3>
-            {% elif Reflector_level >= 7.3 %}
-                <h3 class="text-success" aria-label=" Level: High ">Level: High<i class="fas fa-check-circle"></i></h3>
-            {% elif Reflector_level >= 4.3 %}
-                <h3 class="text-success" aria-label=" Level: Moderate ">Level: Moderate<i class="fas fa-check-circle"></i></h3>
-            {% elif Reflector_level >= 1.3 %}
-                <h3 class="text-success" aria-label=" Level: Low ">Level: Low<i class="fas fa-check-circle"></i></h3>
-            {% else %}
-                <h3 class="text-success" aria-label=" Level: Very Low ">Level: Very Low<i class="fas fa-check-circle"></i></h3>
-            {% endif %}
-            <h2 aria-label="Reflector information">Reflectors (1) take their cues from other people, (2) analyze everything carefully and then do so once again, (3) constantly adapt to others’ moods, and (4) feel that being liked is the key to building a lasting relationship.</h2>
-
-        </div>
-
-        <!-- <h3 aria-label="Review Questions">Questions:</h3>
-        <ul class="list-group mt-3">
-            {% for result in results %}
-                <li class="list-group-item question-item">
-                    <p class="question-text">{{ result['question'] }}</p>
-                    <ul class="answer-list">
-                        <li class="list-group-item"><strong>Your Answer(s):</strong> {{ result['user_answers']|join(', ') }}</li>
-                        <li class="list-group-item"><strong>Answer(s):</strong> {{ result['correct_answers']|join(', ') }}</li>
-                        {% if result['is_correct'] %}
-                            <li class="list-group-item text-success">Correct <i class="fas fa-check"></i></li>
-                        {% else %}
-                            <li class="list-group-item text-danger">Incorrect <i class="fas fa-times"></i></li>
-                        {% endif %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul> -->
 
         <div class="action-buttons">
             <a href="/" class="btn btn-primary mt-4" aria-label="Take Quiz Again">Take Quiz Again</a>

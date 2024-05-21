@@ -79,9 +79,10 @@
         
                 // Update timestamps for modification
                 var questionId = questionDiv.attr('id');
-
+                var firstModifiedField = $("#first_modified_" + questionId);
+                var lastModifiedField = $("#last_modified_" + questionId);
                 var now = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        
+
                 if (!firstModifiedField.val()) {
                     firstModifiedField.val(now);
                 }

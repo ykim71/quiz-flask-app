@@ -11,7 +11,7 @@ app.secret_key = 'your_secret_key'
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '5dk7dl1flsK!'
-app.config['MYSQL_DB'] = 'quiz_app'
+app.config['MYSQL_DB'] = 'testdb3'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # Create a MySQL database connection
@@ -201,9 +201,19 @@ def submit():
     for question in selected_questions:
         user_answers = request.form.getlist(question['question'])
 
+        if request.form.get("first_modified_" + str(question['question_id'])) == '':
+            first_modified_time = None
+        else:
+            first_modified_time = request.form.get("first_modified_" + str(question['question_id']))
+
+        if request.form.get("last_modified_" + str(question['question_id'])) == '':
+            last_modified_time = None
+        else:
+            last_modified_time = request.form.get("last_modified_" + str(question['question_id']))
+
         # Save the quiz log for each selected answer with timestamp
-        query = '''INSERT INTO quiz_log (session_id, question_number, question_id, variable_name, question, user_answers) VALUES (%s, %s, %s, %s, %s, %s)'''
-        cursor.execute(query, (session.get('session_id'), question_number, question['question_id'], question['variable_name'], question['question'], '|'.join(user_answers)))
+        query = '''INSERT INTO quiz_log (session_id, question_number, question_id, variable_name, question, user_answers, first_modified_time, last_modified_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
+        cursor.execute(query, (session.get('session_id'), question_number, question['question_id'], question['variable_name'], question['question'], '|'.join(user_answers), first_modified_time, last_modified_time))
 
         results.append({
             'question_id': question['question_id'],
