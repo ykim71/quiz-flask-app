@@ -3,6 +3,8 @@ import json
 import random
 import pymysql
 from datetime import datetime
+import os
+MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD')
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -52,12 +54,6 @@ def generate_session_id():
     import uuid
     return str(uuid.uuid4())
 
-
-# @app.route('/demo', methods=['POST'])
-# def demo():
-#     session['demo_questions'] = demo_questions
-
-#     return render_template('demo.html', questions=demo_questions)
 
 @app.route('/submit', methods=['POST'])
 def submit():
