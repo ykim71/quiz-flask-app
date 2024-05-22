@@ -12,6 +12,12 @@ body{
 
 .container h2 {
   font-size: 22px; /* Change font size for h2 */
+
+}
+
+.container h3 {
+  font-size: 22px; /* Change font size for h2 */
+
 }
 
 /* Question List Styles */

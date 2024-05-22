@@ -21,28 +21,57 @@
         </div>
         <h3 aria-label="Questions">Questions:</h3>
 
-        <form id="quiz-form" method="POST" action="/demo">
+        <form method="POST" action="/submit">
             {% for question in questions %}
-            <ul class="list-group mt-3">
-                <li class="list-group-item question-item">
+            <div class="list-group mt-3 question-item">
+                <div class="list-group-item">
                     <p class="question-text">{{ question['question'] }}</p>
                     <div class="question" id="{{ question['question_id'] }}">
 
-                        <ul class="answer-list">
-                            {% for choice in question['choices'] %}
-                            <li class="list-group-item">
-                                <input type="radio" class="form-check-input" name="{{ question['question_id'] }}"
-                                    value="{{ choice }}" id="{{ question['question_id'] }}_{{ choice }}">
-                                <label class="answer-text" for="{{ question['question_id'] }}_{{ choice }}">{{ choice }}</label>
-                            </li>
-                            {% endfor %}
-                        </ul>
+                        {% for choice in question['choices'] %}
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="{{ question['question_id'] }}"
+                                value="{{ choice }}" id="{{ question['question_id'] }}_{{ choice }}">
+                            <label class="form-check-label" for="{{ question['question_id'] }}_{{ choice }}">
+                                {{ choice }}
+                            </label>
+                        </div>
+                        {% endfor %}
                     </div>
-                </li>
-            </ul>
+                </div>
+            </div>
             {% endfor %}
+
+            <div class="result-summary">
+                <h2 aria-label="Number-questions">
+                Please tell us about yourself.</h2>
+                </h2>
+                <h3 aria-label="Questions">Answers to the following questions will be completely anonymous.  They are intended to help us get a general feeling for those who complete the RHETSEN scale.  No web-based identifying information is being collected.  We deeply appreciate your help with our research.</h3>
+
+            </div>
+
+            <!-- Render questions from the demo_questions set -->
+            {% for question in demo_questions %}
+            <div class="list-group mt-3 question-item">
+                <div class="list-group-item">
+                    <p class="question-text">{{ question['question'] }}</p>
+                    <div class="question" id="{{ question['question_id'] }}">
+                        {% for choice in question['choices'] %}
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="{{ question['question_id'] }}"
+                                value="{{ choice }}" id="{{ question['question_id'] }}_{{ choice }}">
+                            <label class="form-check-label" for="{{ question['question_id'] }}_{{ choice }}">
+                                {{ choice }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
             <div class="mt-4 text-center">
-                <button type="button" id="submit-button" class="btn btn-primary">Continue</button>
+                <button type="submit" id="submit-button" class="btn btn-primary">Submit</button>
             </div>
         </form>
     </div>
@@ -71,26 +100,8 @@
                 }
             });
         
-            // Toggle the selected-answer class when the radio changes
-            $("input[type='radio']").change(function () {
-                var questionDiv = $(this).closest('.question');
-                questionDiv.find('.selected-answer').removeClass('selected-answer');
-                $(this).closest('li').addClass('selected-answer');
-        
-                // Update timestamps for modification
-                var questionId = questionDiv.attr('id');
-                var firstModifiedField = $("#first_modified_" + questionId);
-                var lastModifiedField = $("#last_modified_" + questionId);
-                var now = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-                if (!firstModifiedField.val()) {
-                    firstModifiedField.val(now);
-                }
-                lastModifiedField.val(now);
-            });
         });
     </script>
-        
 
 </body>
 

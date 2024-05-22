@@ -11,7 +11,7 @@ app.secret_key = 'your_secret_key'
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '5dk7dl1flsK!'
-app.config['MYSQL_DB'] = 'testdb3'
+app.config['MYSQL_DB'] = 'quiz_app'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # Create a MySQL database connection
@@ -40,10 +40,12 @@ def rhetsen():
     session['current_questions'] = questions
     session['session_id'] = generate_session_id()  # Generate a session ID
     session['page_load_time'] = datetime.now()  # Store the page load time
-    num_questions=17
+
+    session['demo_questions'] = demo_questions
+
 
     # Pass the num_questions variable to the template
-    return render_template('rhetsen.html', questions=questions, num_questions=num_questions)
+    return render_template('rhetsen.html', questions=questions, demo_questions=demo_questions)
 
 # Function to generate a unique session ID
 def generate_session_id():
@@ -51,11 +53,11 @@ def generate_session_id():
     return str(uuid.uuid4())
 
 
-@app.route('/demo', methods=['POST'])
-def demo():
-    session['demo_questions'] = demo_questions
+# @app.route('/demo', methods=['POST'])
+# def demo():
+#     session['demo_questions'] = demo_questions
 
-    return render_template('demo.html', questions=demo_questions)
+#     return render_template('demo.html', questions=demo_questions)
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -65,10 +67,10 @@ def submit():
     Reflector_level = 0 
 
     results = []
-    selected_questions = session.get('current_questions', [])
-    num_questions=17
-    passing_level=0
-    question_number = 1 
+    questions = session.get('current_questions', [])
+    demo_questions = session.get('demo_questions', [])
+
+    question_number = 1
 
     question_response_mapping = {
     1: {  # A01Frank
@@ -189,42 +191,38 @@ def submit():
         "Sometimes true": (2, 0, 0),
         "Often true": (1, 1, 0),
         "Almost always true": (0, 2, 0),
-    }
-}
+    } }
+
+    demo_answers = []
+    for demo_question in demo_questions:
+        question_id = demo_question['question_id']
+        demo_answers.append(request.form.getlist(str(question_id)))
 
     cursor = mysql.cursor()
     cursor.execute(
-        "INSERT INTO session_info (session_id, page_load_time, submission_time, num_questions, passing_level) VALUES (%s, %s, %s, %s, %s)",
-        (session.get('session_id'), session.get('page_load_time'), datetime.now(), num_questions, passing_level)
+        "INSERT INTO session_info (session_id, page_load_time, submission_time, gender, education, age, religion, political_ideology, occupation, household_income, relationship, news_use, social_media_use) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+        (session.get('session_id'), session.get('page_load_time'), datetime.now(), demo_answers[0], demo_answers[1], demo_answers[2], demo_answers[3], demo_answers[4],demo_answers[5],demo_answers[6],demo_answers[7], demo_answers[8], demo_answers[9])
     )
 
-    for question in selected_questions:
-        user_answers = request.form.getlist(question['question'])
-
-        if request.form.get("first_modified_" + str(question['question_id'])) == '':
-            first_modified_time = None
-        else:
-            first_modified_time = request.form.get("first_modified_" + str(question['question_id']))
-
-        if request.form.get("last_modified_" + str(question['question_id'])) == '':
-            last_modified_time = None
-        else:
-            last_modified_time = request.form.get("last_modified_" + str(question['question_id']))
+    for question in questions:
+        question_id = question['question_id']
+        user_answers = request.form.getlist(str(question_id))
+        answer_string = '|'.join(user_answers) if user_answers else ''
 
         # Save the quiz log for each selected answer with timestamp
-        query = '''INSERT INTO quiz_log (session_id, question_number, question_id, variable_name, question, user_answers, first_modified_time, last_modified_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
-        cursor.execute(query, (session.get('session_id'), question_number, question['question_id'], question['variable_name'], question['question'], '|'.join(user_answers), first_modified_time, last_modified_time))
+        query = '''INSERT INTO quiz_log (session_id, question_number, question_id, variable_name, question, answer_string) VALUES (%s, %s, %s, %s, %s, %s)'''
+        cursor.execute(query, (session.get('session_id'), question_number, question['question_id'], question['variable_name'], question['question'], answer_string))
 
         results.append({
             'question_id': question['question_id'],
             'question': question['question'],
-            'user_answers': user_answers,
+            'user_answers': answer_string
 
         })
         
 
         if user_answers:
-            sensitivity, assertiveness, reflector = question_response_mapping[question_number][user_answers]
+            sensitivity, assertiveness, reflector = question_response_mapping[question_number][answer_string]
             Sensitivity_level += sensitivity
             Assertiveness_level += assertiveness
             Reflector_level += reflector
@@ -236,7 +234,7 @@ def submit():
     mysql.commit()
     cursor.close()
 
-    return render_template('result.html', Sensitivity_level=Sensitivity_level, Assertiveness_level=Assertiveness_level, Reflector_level=Reflector_level, results=results, selected_questions=selected_questions)
+    return render_template('result.html', Sensitivity_level=Sensitivity_level, Assertiveness_level=Assertiveness_level, Reflector_level=Reflector_level, results=results)
 
 if __name__ == '__main__':
     app.run(debug=True)
