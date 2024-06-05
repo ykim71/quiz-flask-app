@@ -20,7 +20,7 @@
         "question_id": 21,
         "variable_name" : "religion",
         "question": "How would you describe your religious beliefs?",
-        "choices": ["Deeply religiouse", "Moderately religious", "Not too religious", "Not at all religious", "Not sure how I feel about religion"]    },
+        "choices": ["Deeply religious", "Moderately religious", "Not too religious", "Not at all religious", "Not sure how I feel about religion"]    },
     {
         "question_id": 22,
         "variable_name" : "ideology",
