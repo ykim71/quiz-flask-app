@@ -10,8 +10,8 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 # Configure the MySQL database connection
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_HOST'] = 'database-2.c1eie2062f9x.us-east-2.rds.amazonaws.com'
+app.config['MYSQL_USER'] = 'admin'
 app.config['MYSQL_PASSWORD'] = MYSQL_PASSWORD
 app.config['MYSQL_DB'] = 'quiz_app'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
